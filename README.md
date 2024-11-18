@@ -1,5 +1,8 @@
 # Chatbot Development with Rasa
 
+![Screenshot 2024-11-18 at 6 32 34 PM](https://github.com/user-attachments/assets/94090a02-79e5-449a-a3e4-b9cd6cdb6be8)
+
+
 ## Project Overview
 
 This project is a chatbot developed using Rasa, designed to handle user inquiries and provide responses based on natural language understanding. The chatbot integrates with a Flask backend and utilizes PostgreSQL for data storage. It is deployed on AWS or Google Cloud for scalability and reliability.
