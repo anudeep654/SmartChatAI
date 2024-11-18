@@ -1,4 +1,4 @@
-# Chatbot Development with Rasa
+# Chatbot
 
 ![Screenshot 2024-11-18 at 6 32 34 PM](https://github.com/user-attachments/assets/94090a02-79e5-449a-a3e4-b9cd6cdb6be8)
 
