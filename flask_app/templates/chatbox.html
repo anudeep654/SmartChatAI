@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dummy Bank</title>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  </head>
+
+  <body class="dashboard-page">
+    <div class="dashboard-container">
+      <!-- Header -->
+      <header class="dashboard-header">
+        <h1>Bank Dashboard</h1>
+        <a href="/logout" class="logout-button">Logout</a>
+      </header>
+
+      <!-- Main Content -->
+      <main class="dashboard-main">
+        <!-- Account Overview -->
+        <section class="account-overview">
+          <h2>Account Overview</h2>
+          <div class="account-summary">
+            <div class="account-card">
+              <h3>Checking Account</h3>
+              <p>Balance: $<span id="checking-balance">5,000</span></p>
+            </div>
+            <div class="account-card">
+              <h3>Savings Account</h3>
+              <p>Balance: $<span id="savings-balance">10,000</span></p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Charts -->
+        <section class="charts-section">
+          <h2>Financial Overview</h2>
+          <canvas id="balanceChart" width="400" height="200"></canvas>
+        </section>
+
+        <!-- Statements -->
+        <section class="statements-section">
+          <h2>Recent Statements</h2>
+          <button id="download-statement" onclick="downloadStatement()">
+            Download Last Month's Statement
+          </button>
+          <ul id="statements-list">
+            <li>Statement 1: $500 - 01/08/2024</li>
+            <li>Statement 2: $200 - 15/07/2024</li>
+          </ul>
+        </section>
+      </main>
+
+      <!-- Chat Icon -->
+      <div class="chat-icon" onclick="toggleChat()">
+        <img src="/static/images/chatbot_new.png" alt="Chat" />
+      </div>
+
+      <!-- Chatbot Window -->
+      <div id="chatbot" class="chatbot-window" style="display: none">
+        <div class="chatbot-header">
+          <span>Online</span>
+          <button onclick="toggleChat()"></button>
+        </div>
+        <div class="chatbot-body" id="chatbot-body">
+          <!-- Rasa Web Chat will be loaded here -->
+        </div>
+        <div class="chatbot-footer">
+          <input
+            type="text"
+            class="chatbot-input"
+            id="chat-input"
+            placeholder="Type your message..."
+          />
+          <button class="submit-button" onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rasa Web Chat Integration -->
+    <script src="https://cdn.jsdelivr.net/npm/rasa-webchat@1.0.1/lib/index.js"></script>
+    <script>
+      var chatInitialized = false;
+
+      function toggleChat() {
+        var chatbot = document.getElementById("chatbot");
+        if (chatbot.style.display === "none") {
+          chatbot.style.display = "flex";
+          if (!chatInitialized) {
+            chatInitialized = true;
+          }
+        } else {
+          chatbot.style.display = "none";
+        }
+      }
+
+      var isRequestInProgress = false; // Flag to prevent multiple AJAX calls
+
+      function sendMessage() {
+        let userMessage = $("#chat-input").val().trim();
+        if (userMessage === "") {
+          return; // Do not send empty messages
+        }
+        $("#chat-input").val("");
+
+        // Append user message to the chatbox
+        $("#chatbot-body").append(
+          '<div class="message user-message"><div class="avatar"><img src="{{ url_for('static', filename='images/profile.png') }}" alt="User Avatar"></div><div class="message-content">' + userMessage + '</div></div>'
+        );
+
+        $("#chatbot-body").append(
+          `<div class="message bot-message typing" id="typing-indicator">
+            <div class="avatar"><img src="{{ url_for('static', filename='images/bot.png') }}" alt="Bot Avatar"></div>
+            <div class="message-content typing-indicator">
+              <div class="dots">
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+          </div>`
+        );
+
+        // Scroll to the bottom of the chatbox
+        scrollToBottom();
+
+        // Send user message to the server and get bot's response
+        $.ajax({
+          type: "POST",
+          url: "/webhook",
+          contentType: "application/json",
+          data: JSON.stringify({ message: userMessage }),
+          success: function (data) {
+
+           $("#typing-indicator").remove();
+
+            let botText = data.text;
+            let botButtons = data.buttons;
+            let botAttachments = data.attachments;
+            let botCards = data.custom ? data.custom.cards : [];
+            let botInvestmentOptions = data.custom ? data.custom.investments : [];
+
+
+            // Append bot's response text to the chatbox
+            if (botText) {
+              $("#chatbot-body").append(
+                '<div class="message bot-message"><div class="avatar"><img src="{{ url_for('static', filename='images/bot.png') }}" alt="Bot Avatar"></div><div class="message-content">' + botText + '</div></div>'
+              );
+            }
+
+              // Append cards if they exist
+              if (botCards && botCards.length > 0) {
+                let cardsHtml = '<div class="carousel">';
+                botCards.forEach(card => {
+                    cardsHtml += `
+                    <div class="card" style="background-color: ${card.card_color};">
+                        <div class="card-body">
+                            <h4 class="card-name">${card.card_name}</h4>
+                            <p class="card-number">${card.card_number}</p>
+                            <p class="card-holder">${card.card_holder_name}</p>
+                            <a href="${card.apply_link}" class="apply-link">Apply Now</a>
+                        </div>
+                    </div>`;
+                });
+                cardsHtml += '</div>';
+
+                $("#chatbot-body").append(
+                    '<div class="message bot-cards">' + cardsHtml + '</div>'
+                );
+              }
+
+          // Populate investment carousel
+          if (botInvestmentOptions && botInvestmentOptions.length > 0) {
+            let investmentContainer = $("#investment-carousel");
+            investmentContainer.empty(); // Clear existing content
+            botInvestmentOptions.forEach(function (investment) {
+              investmentContainer.append(
+                '<div class="investment-card"><div class="investment-name">' + investment.name + '</div><div class="investment-details">' + investment.details + '</div><div class="investment-return">Return: ' + investment.returnRate + '</div><a href="' + investment.link + '" class="investment-link">Learn More</a></div>'
+              );
+            });
+          }
+
+
+            // Handle buttons if they exist
+            if (botButtons && botButtons.length > 0) {
+              let buttonsHtml = '<div class="message-buttons">';
+              botButtons.forEach((button) => {
+                let encodedPayload = encodeURIComponent(button.payload);
+                buttonsHtml += `<button class="chat-button" data-payload="${encodedPayload}">${button.title}</button>`;
+              });
+              buttonsHtml += "</div>";
+
+              $("#chatbot-body").append(
+                '<div class="message bot-buttons">' + buttonsHtml + "</div>"
+              );
+            }
+
+      // Append bot's response attachments to the chatbox
+          if (botAttachments && botAttachments.length > 0) {
+            botAttachments.forEach(function(attachment) {
+                if (attachment.type === "file") {
+                    $("#chatbot-body").append(
+                        '<div class="message bot-message"><div class="avatar"><img src="{{ url_for('static', filename='images/bot.png') }}" alt="Bot Avatar"></div><div class="message-content">' +
+                        '<a href="' + attachment.payload.url + '" download>' + attachment.payload.title + '</a></div></div>'
+                    );
+                }
+                if(attachment.type === "html"){
+                  $("#chatbot-body").append(
+                    '<div class="message bot-message"><div class="avatar"><img src="{{ url_for('static', filename='images/bot.png') }}" alt="Bot Avatar"></div><div class="message-content">' +
+                    attachment.payload.html_content + '</div></div>'
+                );
+                }
+            });
+        }
+
+            // Scroll to the bottom of the chatbox after bot response
+            scrollToBottom();
+          },
+          error: function (xhr, status, error) {
+        // Remove "bot is typing..." message
+        $("#typing-indicator").remove();
+
+        if (xhr.status === 404 || xhr.status === 500) {
+          // Show bot is offline message if the status is 404
+          $("#chatbot-body").append(
+            '<div class="message bot-message bot-offline"><div class="avatar"><img src="{{ url_for('static', filename='images/bot.png') }}" alt="Bot Avatar"></div><div class="message-content">Bot is offline</div></div>'
+          );
+        } else {
+          // Handle other errors
+          $("#chatbot-body").append(
+            '<div class="message bot-message"><div class="avatar"><img src="{{ url_for('static', filename='images/bot.png') }}" alt="Bot Avatar"></div><div class="message-content">An error occurred. Please try again.</div></div>'
+          );
+        }
+
+        // Scroll to the bottom of the chatbox after the error response
+        scrollToBottom();
+
+          }
+        });
+      }
+
+
+      // Event delegation for button clicks
+      $(document).on("click", ".chat-button", function () {
+        if (isRequestInProgress) return; // Prevent multiple requests
+
+        let encodedPayload = $(this).data("payload");
+        let payload = decodeURIComponent(encodedPayload);
+
+        isRequestInProgress = true; // Set flag to true while request is in progress
+
+        // Scroll to the bottom of the chatbox after the error response
+        scrollToBottom();
+
+          // Show "bot is typing..." message with animated dots
+        $("#chatbot-body").append(
+          `<div class="message bot-message typing" id="typing-indicator">
+            <div class="avatar"><img src="{{ url_for('static', filename='images/bot.png') }}" alt="Bot Avatar"></div>
+            <div class="message-content typing-indicator">
+              <div class="dots">
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+          </div>`
+        );
+
+        $.ajax({
+          type: "POST",
+          url: "/webhook",
+          contentType: "application/json",
+          data: JSON.stringify({ message: payload }),
+          success: function (data) {
+            $("#typing-indicator").remove();
+
+            let botText = data.text;
+            let botButtons = data.buttons;
+            let botCards = data.custom ? data.custom.cards : [];
+            let botAttachments = data.attachments;
+            let botHtmlContent = data.custom ? data.custom.html : [];
+            let botInvestmentOptions = data.custom ? data.custom.investments : [];
+            let botCustom = data.custom;
+
+            // Append bot's response to the chatbox
+            $("#chatbot-body").append(
+              '<div class="message bot-message"><div class="avatar"><img src="/static/images/bot.png" alt="Bot Avatar"></div><div class="message-content">' +
+              botText +
+              "</div></div>"
+            );
+
+          // Populate investment carousel
+          if (botInvestmentOptions && botInvestmentOptions.length > 0) {
+            let investmentContainer = $("#investment-carousel");
+            investmentContainer.empty(); // Clear existing content
+            botInvestmentOptions.forEach(function (investment) {
+              investmentContainer.append(
+                '<div class="investment-card"><div class="investment-name">' + investment.name + '</div><div class="investment-details">' + investment.details + '</div><div class="investment-return">Return: ' + investment.returnRate + '</div><a href="' + investment.link + '" class="investment-link">Learn More</a></div>'
+              );
+            });
+          }
+
+            // Check if bot custom data contains a specific form instruction
+            if (botCustom && botCustom.form_name === "financial_planning_form") {
+              // Render the financial planning form dynamically
+              $("#chatbot-body").append(
+                  `
+                  <div class="message bot-message">
+                    <div class="avatar">
+                        <img src="{{ url_for('static', filename='images/bot.png') }}" alt="Bot Avatar">
+                    </div>
+                    <div class="investment-form-content">
+                        <form id="investment-form">
+                            <label for="investment-amount" class="investment-label">Investment Amount per month:</label>
+                            <select id="investment-amount" class="investment-input" name="starting_amount" required>
+                                <option value="500">500</option>
+                                <option value="800">800</option>
+                                <option value="1000">1000</option>
+                                <option value="1500">1500</option>
+                                <option value="2000">2000</option>
+                                <option value="2500">2500</option>
+                                <option value="3000">3000</option>
+                                <option value="5000">5000</option>
+                                <option value="10000">10000</option>
+                                <option value="50000">50000</option>
+                            </select><br><br>
+
+                            <label for="investment-duration" class="investment-label">Duration (Years):</label>
+                            <select id="investment-duration" class="investment-input" name="duration" required>
+                                <option value="1">1</option>
+                                <option value="3">3</option>
+                                <option value="5">5</option>
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                            </select><br><br>
+
+                            <label for="investment-return" class="investment-label">Return Rate (%):</label>
+                            <select id="investment-return" class="investment-input" name="return_rate" required>
+                                <option value="2">2%</option>
+                                <option value="5">5%</option>
+                                <option value="7">7%</option>
+                                <option value="10">10%</option>
+                                <option value="12">12%</option>
+                            </select><br><br>
+
+                            <label for="investment-compound" class="investment-label">Compound Frequency:</label>
+                            <select id="investment-compound" class="investment-input" name="compound_frequency" required>
+                                <option value="annually">Annually</option>
+                                <option value="semi_annually">Semi-Annually</option>
+                                <option value="quarterly">Quarterly</option>
+                                <option value="monthly">Monthly</option>
+                            </select><br><br>
+
+                            <input type="submit" value="Submit" class="investment-submit">
+                        </form>
+                    </div>
+                </div>
+
+                  `
+              );
+
+                              // Attach form submission handler to the correct form ID
+                $("#investment-form").on("submit", function (event) {
+                  event.preventDefault();
+                  let formData = new FormData(event.target);
+                  let data = {};
+                  formData.forEach((value, key) => {
+                    data[key] = value;
+                  });
+                  scrollToBottom();
+
+                  // Show "bot is typing..." message with animated dots
+                $("#chatbot-body").append(
+                  `<div class="message bot-message typing" id="typing-indicator">
+                    <div class="avatar"><img src="{{ url_for('static', filename='images/bot.png') }}" alt="Bot Avatar"></div>
+                    <div class="message-content typing-indicator">
+                      <div class="dots">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                      </div>
+                    </div>
+                  </div>`
+                );
+                  // Send the form data to the webhook
+                  $.ajax({
+                    type: "POST",
+                    url: "/webhook",
+                    contentType: "application/json",
+                    data: JSON.stringify({ sender: 'user', message: data }),
+                    success: function (response) {
+                      // Handle response if needed
+
+                      $("#typing-indicator").remove();
+
+                                        let botInvestmentOptions = response.custom ? response.custom.investments : [];
+                  // Populate investment carousel without clearing existing content
+                  if (botInvestmentOptions && botInvestmentOptions.length > 0) {
+                    let investmentContainer = $("#chatbot-body");
+                    
+                    // Loop through the investment options and append them
+                    botInvestmentOptions.forEach(function (investment) {
+                      investmentContainer.append(
+                        '<div class="message bot-message">' +
+                        '<div class="avatar"><img src="{{ url_for('static', filename='images/bot.png') }}" alt="Bot Avatar"></div>' +
+                        '<div class="message-content">' +
+                        '<div class="investment-card">' +
+                        '<div class="investment-name">' + investment.name + '</div>' +
+                        '<div class="investment-details">' + investment.description + '</div>' +
+                        '<div class="investment-details">Package: ' + investment.packages + '</div>' +
+                        '<div class="investment-details">Monthly: '+ investment.monthly_payment + '</div>' +
+                        '<div class="investment-return">Return: ' + investment.returns + '</div>' +
+                        '<a href="' + investment.link + '" class="investment-link" target="_blank">Learn More</a>' +
+                        '</div>' +
+                        '</div></div>'
+                      );
+                    });
+                  }
+
+
+                    }
+                  });
+                });
+
+            }
+
+
+            // Append cards if they exist
+            if (botCards && botCards.length > 0) {
+              let cardsHtml = '<div class="carousel">';
+              botCards.forEach(card => {
+                  cardsHtml += `
+                  <div class="card" style="background-color: ${card.card_color};">
+                      <div class="card-body">
+                          <h4 class="card-name">${card.card_name}</h4>
+                          <p class="card-number">${card.card_number}</p>
+                          <p class="card-holder">${card.card_holder_name}</p>
+                          <a href="${card.apply_link}" class="apply-link" target="_blank">Apply Now</a>
+                      </div>
+                  </div>`;
+              });
+              cardsHtml += '</div>';
+
+              $("#chatbot-body").append(
+                  '<div class="message bot-cards">' + cardsHtml + '</div>'
+              );
+            }
+
+
+        // Append bot's response attachments to the chatbox
+            if (botAttachments && botAttachments.length > 0) {
+              botAttachments.forEach(function(attachment) {
+                  if (attachment.type === "file") {
+                      $("#chatbot-body").append(
+                          '<div class="message bot-message"><div class="avatar"><img src="{{ url_for('static', filename='images/bot.png') }}" alt="Bot Avatar"></div><div class="message-content">' +
+                          '<a href="' + attachment.payload.url + '" download>' + attachment.payload.title + '</a></div></div>'
+                      );
+                  }
+                  
+              });
+          }
+
+                  // Append bot's response attachments to the chatbox
+                  if (botHtmlContent && botHtmlContent.length > 0) {
+                    $("#chatbot-body").append(
+                        '<div class="message bot-message"><div class="avatar"><img src="{{ url_for('static', filename='images/bot.png') }}" alt="Bot Avatar"></div><div class="message-content">' + botHtmlContent + '</div></div>'
+                    );
+                }
+        
+
+            // Append buttons if they exist
+            if (botButtons && botButtons.length > 0) {
+              let buttonsHtml = '<div class="message-buttons">';
+              botButtons.forEach((button) => {
+                let encodedPayload = encodeURIComponent(button.payload);
+                buttonsHtml += `<button class="chat-button" data-payload="${encodedPayload}">${button.title}</button>`;
+              });
+              buttonsHtml += "</div>";
+
+              $("#chatbot-body").append(
+                '<div class="message bot-buttons">' + buttonsHtml + "</div>"
+              );
+            }
+
+            // Scroll to the bottom of the chatbox
+            $("#chatbot-body").scrollTop($("#chatbot-body")[0].scrollHeight);
+
+            // Reset the flag after the request is complete
+            isRequestInProgress = false;
+          },
+          error: function (xhr, status, error) {
+            // Remove "bot is typing..." message
+            $("#typing-indicator").remove();
+
+            if (xhr.status === 404 || xhr.status === 500) {
+              // Show bot is offline message if the status is 404
+              $("#chatbot-body").append(
+                '<div class="message bot-message bot-offline"><div class="avatar"><img src="/static/images/bot.png" alt="Bot Avatar"></div><div class="message-content">Bot is offline.</div></div>'
+              );
+            } else {
+              // Handle other errors
+              $("#chatbot-body").append(
+                '<div class="message bot-message"><div class="avatar"><img src="/static/images/bot.png" alt="Bot Avatar"></div><div class="message-content">An error occurred. Please try again.</div></div>'
+              );
+            }
+
+            // Scroll to the bottom of the chatbox after the error response
+            scrollToBottom();
+
+            // Reset the flag after the request is complete
+            isRequestInProgress = false;
+          },
+        });
+      });
+
+      // Send message on Enter key press
+      $("#chat-input").keypress(function (event) {
+        if (event.which === 13) {
+          sendMessage();
+        }
+      });
+
+      function downloadStatement() {
+        // Placeholder function to handle downloading a statement
+        alert("Downloading the last month's statement...");
+      }
+
+      function scrollToBottom() {
+        setTimeout(function() {
+          const chatbotBody = $("#chatbot-body");
+          chatbotBody.scrollTop(chatbotBody[0].scrollHeight);
+        }, 100); // Adjust the delay as needed
+      }
+
+      // Chart.js example
+      document.addEventListener("DOMContentLoaded", function () {
+        var ctx = document.getElementById("balanceChart").getContext("2d");
+        var balanceChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: ["Checking Account", "Savings Account"],
+            datasets: [
+              {
+                label: "Balance",
+                data: [5000, 10000],
+                backgroundColor: [
+                  "rgba(75, 192, 192, 0.2)",
+                  "rgba(153, 102, 255, 0.2)",
+                ],
+                borderColor: [
+                  "rgba(75, 192, 192, 1)",
+                  "rgba(153, 102, 255, 1)",
+                ],
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+              },
+            },
+          },
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,98 @@
+version: "3.1"
+
+stories:
+  - story: User greets and selects service
+    steps:
+      - intent: greet
+      - action: action_greet_user
+      - intent: select_service
+        entities:
+          - service: account_services
+      - action: action_handle_service_selection
+      - intent: select_service
+        entities:
+          - service: credit_card
+      - action: action_handle_service_selection
+      - intent: provide_income
+        entities:
+          - annual_income: 50000
+      - action: action_handle_service_selection
+      - intent: provide_preferences
+        entities:
+          - preferences: "lounges"
+      - action: action_handle_service_selection
+      - intent: confirm_fee
+        entities:
+          - annual_fee: "Yes"
+      - action: action_show_credit_cards
+      - intent: select_service
+        entities:
+          - service: financial_planning
+      - action: action_handle_service_selection
+      - intent: investment_plans
+        entities:
+          - investments: "investments"
+      - action: action_handle_service_selection
+
+  - story: User switches service and resets all slots
+    steps:
+      - intent: switch_service
+      - action: action_reset_slots
+
+  - story: User downloads statement
+    steps:
+      - intent: download_statement
+      - action: action_download_statement
+      - action: utter_download_statement
+
+  - story: handle investment form submission
+    steps:
+      - intent: submit_investment_form
+      - action: action_submit_investment_form
+
+
+  - story: Currency transfer flow
+    steps:
+      - intent: initiate_transfer
+      - action: action_show_currency_exchange
+      - intent: provide_transfer_details
+        entities:
+          - amount: "100"
+          - from_currency: "SGD"
+          - to_currency: "AUD"
+      - action: action_initiate_transfer
+      - intent: validate_transfer_details
+        entities:
+          - amount: "100"
+          - from_currency: "SGD"
+          - to_currency: "AUD"
+          - from_account: "Alice Johnson - 1122334455"
+          - to_account: "Eva White - 1234567890"
+      - action: action_send_otp
+      - intent: provide_otp
+        entities:
+          - otp: "111111"
+      - action: action_verify_otp
+  
+  - story: User wants to block credit card
+    steps:
+      - intent: block_credit_card
+      - action: utter_block_credit_card
+      - intent: affirm
+      - action: action_show_block_card_section
+      - intent: deny
+      - action: utter_block_card_deny
+
+  - story: User asks to schedule a call
+    steps:
+      - intent: ask_schedule_call
+      - action: action_show_locations_card
+      - intent: provide_branch
+        entities:
+          - branch: "Branch 1 - Orchard Road"
+      - action: action_show_schedule_card
+      - intent: provide_schedule_details
+        entities:
+          - schedule_details: "2024-09-28 12:00:06"
+          - branch: "Woodlands"
+      - action: action_show_confirmation_card

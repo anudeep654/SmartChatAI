@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Chatbot System Diagram with Enhanced Security</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+        }
+        svg {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ccc;
+            background-color: white;
+        }
+        .node {
+            fill: #fff;
+            stroke: #000;
+            stroke-width: 2;
+        }
+        .node-text {
+            font-size: 12px;
+            text-anchor: middle;
+            dominant-baseline: middle;
+        }
+        .api-gateway {
+            fill: #f9f;
+            stroke: #333;
+            stroke-width: 2;
+        }
+        .security {
+            fill: #bbf;
+            stroke: #333;
+            stroke-width: 2;
+        }
+        .rasa {
+            fill: #bfb;
+            stroke: #333;
+            stroke-width: 2;
+        }
+        .data-path {
+            fill: none;
+            stroke: #999;
+            stroke-width: 2;
+            stroke-dasharray: 5,5;
+        }
+        .bot-icon {
+            fill: #4285f4;
+        }
+        @keyframes moveBot {
+            from { offset-distance: 0%; }
+            to { offset-distance: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <svg width="1200" height="800" viewBox="0 0 1200 800">
+            <!-- User -->
+            <circle class="node" cx="50" cy="400" r="40" />
+            <text class="node-text" x="50" y="400">User</text>
+
+            <!-- Browser -->
+            <rect class="node" x="150" y="370" width="80" height="60" />
+            <text class="node-text" x="190" y="400">Browser</text>
+
+            <!-- Frontend -->
+            <rect class="node" x="300" y="370" width="80" height="60" />
+            <text class="node-text" x="340" y="400">Frontend</text>
+
+            <!-- API Gateway -->
+            <rect class="api-gateway" x="450" y="300" width="120" height="200" rx="20" ry="20" />
+            <text class="node-text" x="510" y="350">API Gateway</text>
+            <text class="node-text" x="510" y="380">Rate Limiting</text>
+            <text class="node-text" x="510" y="410">API Key Mgmt</text>
+            <text class="node-text" x="510" y="440">Request Routing</text>
+            <text class="node-text" x="510" y="470">Analytics</text>
+
+            <!-- Flask Web Server -->
+            <rect class="node" x="650" y="370" width="80" height="60" />
+            <text class="node-text" x="690" y="400">Flask Server</text>
+
+            <!-- Security Layer -->
+            <rect class="security" x="800" y="350" width="100" height="100" />
+            <text class="node-text" x="850" y="380">Security Layer</text>
+            <text class="node-text" x="850" y="410">Authentication</text>
+            <text class="node-text" x="850" y="440">OTP Verification</text>
+
+            <!-- Rasa NLU -->
+            <rect class="rasa" x="970" y="250" width="80" height="60" rx="10" ry="10" />
+            <text class="node-text" x="1010" y="280">Rasa NLU</text>
+
+            <!-- Rasa Core -->
+            <rect class="rasa" x="970" y="370" width="80" height="60" rx="10" ry="10" />
+            <text class="node-text" x="1010" y="400">Rasa Core</text>
+
+            <!-- Security Layer for Actions -->
+            <rect class="security" x="970" y="490" width="80" height="60" />
+            <text class="node-text" x="1010" y="520">Action Security</text>
+
+            <!-- Actions -->
+            <rect class="node" x="970" y="610" width="80" height="60" />
+            <text class="node-text" x="1010" y="640">Actions</text>
+
+            <!-- End Systems -->
+            <rect class="node" x="800" y="580" width="80" height="60" />
+            <text class="node-text" x="840" y="610">End System 1</text>
+
+            <rect class="node" x="800" y="680" width="80" height="60" />
+            <text class="node-text" x="840" y="710">End System 2</text>
+
+            <!-- Database -->
+            <rect class="security" x="1070" y="580" width="80" height="60" />
+            <text class="node-text" x="1110" y="610">DB Security</text>
+
+            <path class="node" d="M1070,700 Q1120,700 1120,680 V660 Q1120,640 1070,640 Q1020,640 1020,660 V680 Q1020,700 1070,700 Z" />
+            <text class="node-text" x="1070" y="670">Database</text>
+
+            <!-- Data Flow Paths -->
+            <path class="data-path" id="path1" d="M90,400 L150,400" />
+            <path class="data-path" id="path2" d="M230,400 L300,400" />
+            <path class="data-path" id="path3" d="M380,400 L450,400" />
+            <path class="data-path" id="path4" d="M570,400 L650,400" />
+            <path class="data-path" id="path5" d="M730,400 L800,400" />
+            <path class="data-path" id="path6" d="M900,400 C935,400 935,280 970,280" />
+            <path class="data-path" id="path7" d="M1010,310 L1010,370" />
+            <path class="data-path" id="path8" d="M1010,430 L1010,490" />
+            <path class="data-path" id="path9" d="M1010,550 L1010,610" />
+            <path class="data-path" id="path10" d="M970,640 C920,640 920,610 880,610" />
+            <path class="data-path" id="path11" d="M970,640 C920,640 920,710 880,710" />
+            <path class="data-path" id="path12" d="M1050,640 L1070,640" />
+            <path class="data-path" id="path13" d="M970,400 C935,400 935,430 900,430" />
+            <path class="data-path" id="path14" d="M800,430 L730,430" />
+            <path class="data-path" id="path15" d="M650,430 L570,430" />
+            <path class="data-path" id="path16" d="M450,430 L380,430" />
+            <path class="data-path" id="path17" d="M300,430 L230,430" />
+            <path class="data-path" id="path18" d="M150,430 L90,430" />
+
+            <!-- Bot Icon -->
+            <g class="bot-icon" transform="translate(-10, -10)">
+                <circle cx="10" cy="10" r="10" />
+                <path d="M5,8 Q10,13 15,8 M5,12 Q10,17 15,12" stroke="white" stroke-width="2" fill="none" />
+            </g>
+        </svg>
+    </div>
+
+    <script>
+        const bot = document.querySelector('.bot-icon');
+        const paths = document.querySelectorAll('.data-path');
+
+        function animateAlongPath(pathIndex) {
+            if (pathIndex >= paths.length) {
+                setTimeout(() => animateAlongPath(0), 1000); // Restart after 1 second
+                return;
+            }
+
+            const path = paths[pathIndex];
+            bot.style.offsetPath = `path("${path.getAttribute('d')}")`;
+            bot.style.animation = 'moveBot 1.5s ease-in-out';
+
+            bot.onanimationend = () => {
+                bot.style.animation = 'none';
+                setTimeout(() => animateAlongPath(pathIndex + 1), 100);
+            };
+        }
+
+        // Start animation when the page loads
+        window.onload = () => animateAlongPath(0);
+    </script>
+</body>
+</html>

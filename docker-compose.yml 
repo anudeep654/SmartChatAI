@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  flask_app:
+    build:
+      context: ./flask_app
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=mysql://admin:EI3bupbQfg47roGTh60d@db/mydatabase
+    depends_on:
+      - db
+    networks:
+      - app_network
+
+  rasa:
+    build:
+      context: .
+      dockerfile: Dockerfile.rasa
+    ports:
+      - "5005:5005"
+    volumes:
+      - ./:/app
+    command: run --enable-api --cors "*"
+    networks:
+      - app_network
+
+  rasa_actions:
+    build:
+      context: .
+      dockerfile: Dockerfile.rasa_actions
+    ports:
+      - "5055:5055"
+    volumes:
+      - ./actions:/app/actions
+    command: run --actions actions
+    networks:
+      - app_network
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: EI3bupbQfg47roGTh60d
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  mysql_data:

@@ -1,0 +1,273 @@
+version: "3.1"
+
+nlu:
+- intent: greet
+  examples: |
+    - hi
+    - hello
+    - cu
+    - good by
+    - cee you later
+    - good night
+    - bye
+    - goodbye
+    - have a nice day
+    - see you around
+    - bye bye
+    - see you later
+
+- intent: select_service
+  examples: |
+    - I want to know about [Account Services](account_services)
+    - Show me [Financial Planning & Investment Services](financial_planning)
+    - I want to know about [Credit Card Services](credit_card)
+    - [Credit Card Services](credit_card)
+    - [Loan Services](loan_services)
+    - [Currency Exchange](currency_exchange)
+    - [FAQ](faq)
+    - I want [account_services](service)
+    - [Financial Planning & Investment Services](financial_planning)
+#    - I need help with [credit_card](service)
+#    - Looking for [loan_services](service)
+#    - I want to select [account services](service)
+#    - I need help with [credit cards](service)
+
+- intent: download_statement
+  examples: |
+    - Can I download the last one-month statement?
+    - I need a statement for the last month
+
+- intent: switch_service
+  examples: |
+    - I want to switch to [Financial Planning & Investment Services](financial_planning)
+    - Show me [Currency Exchange](currency_exchange)
+    - Go to [FAQ](faq)
+    - switch service
+    
+- intent: provide_income
+  examples: |
+    - My annual income is [50000](annual_income)
+    - I earn [60000](annual_income) per year
+    - [50000](annual_income)
+    - [50000SGD](annual_income)
+    - [150000SGD](annual_income)
+    - [150000 SGD](annual_income)
+    - [15000 SGD](annual_income)
+    - [500000 SGD](annual_income)
+
+- intent: provide_preferences
+  examples: |
+    - I am looking for [lounges](preferences)
+    - I prefer [rewards](preferences)
+    - [lounges](preferences)
+    - looking for [lounges](preferences)
+
+- intent: confirm_fee
+  examples: |
+    - [Yes](annual_fee)
+    - [No](annual_fee)
+    - [Y](annual_fee)
+    - [OK](annual_fee)
+
+- intent: investment_plans
+  examples: |
+    - I am looking for [Investments](investments)
+    - [Investments](investments)
+    - [Investment plans](investments)
+    - [Investment plans](investments)
+
+- intent: submit_investment_form
+  examples: |
+    - [starting_amount:1000] [duration:5] [return_rate:7] [compound_frequency:annually]
+    - [starting_amount:500] [duration:1] [return_rate:2] [compound_frequency:annually]
+    - Starting amount is 1000, duration is 5 years, return rate is 7%, and compound frequency is annually
+    - I want to invest [starting_amount=1000] for [duration=5] years with a [return_rate=7]% return, compounded [compound_frequency=annually]
+    - My starting amount is [starting_amount=1000], duration is [duration=5] years, return rate is [return_rate=7]%, and compound frequency is [compound_frequency=annually]
+    - I would like to invest [$1000] for [5 years] with a [7%] return rate, compounded [annually]
+    - Invest [starting_amount=500] for [duration=1] year with [return_rate=2]% return, compounded [compound_frequency=annually]
+
+
+- intent: loan_assessment
+  examples: |
+    - I want to assess my loan
+    - Loan assessment please
+    - Help me with loan assessment
+
+- intent: loan_product
+  examples: |
+    - Show me loan products
+    - I want to see available loan options
+    - List the loan products
+    - What loan products are available?
+    - Can you show me the loan options?
+    - I'd like to view loan products
+    - Display the loan products for me
+    - What are the different loan products?
+    - Tell me about the loan products
+
+- intent: inform
+  examples: |
+    - I need a loan for [home_purchase](loan_reason)
+    - I need a loan for [education](loan_reason)
+    - I need a loan for [medical_expenses](loan_reason)
+    - I need a loan for [business_expansion](loan_reason)
+    - I need a loan amount of [<50000](loan_amount)
+    - I need a loan amount of [50000-100000](loan_amount)
+    - I need a loan amount of [100000-500000](loan_amount)
+    - I need a loan amount of [500000+](loan_amount)
+    - [<50000](loan_amount)
+    - [50000-100000](loan_amount)
+    - [100000-500000](loan_amount)
+    - [500000+](loan_amount)
+    - I prefer a loan tenure of [1-3 years](loan_tenure)
+    - I prefer a loan tenure of [3-5 years](loan_tenure)
+    - I prefer a loan tenure of [5-10 years](loan_tenure)
+    - I prefer a loan tenure of [10+ years](loan_tenure)
+    - [1-3 years](loan_tenure)
+    - I can offer [property](loan_collateral) as collateral
+    - I can offer [vehicle](loan_collateral) as collateral
+    - I can offer [jewelry](loan_collateral) as collateral
+    - I can offer [none](loan_collateral) as collateral
+    - My primary source of income is [salaried](loan_income_source)
+    - My primary source of income is [self_employed](loan_income_source)
+    - My primary source of income is [business_owner](loan_income_source)
+    - My primary source of income is [other](loan_income_source)
+
+- intent: currency_exchange
+  examples: |
+    - I want to exchange currency
+    - Can you help me with currency conversion?
+    - I need to transfer money to a different currency
+    - Show me the exchange rates
+    - How can I convert USD to SGD?
+    - I want to exchange dollars for euros
+    - What's the current exchange rate?
+    - Can you show me the currency exchange interface?
+
+- intent: initiate_transfer
+  examples: |
+    - I want to transfer money
+    - Can I make a currency transfer?
+    - Start a new transfer
+    - Begin money transfer
+    - Initiate a currency exchange transfer
+
+- intent: validate_transfer_details
+  examples: |
+    - Confirm transfer of [1000](amount) [SGD](from_currency) from [Alice Johnson - 1122334455](from_account) to [Eva White - 1234567890](to_account) in [AUD](to_currency)
+    - Confirm transfer of [500](amount) [USD](from_currency) from [Eva White - 1234567890](from_account) to [Eva White - 1234567890](to_account) in [EUR](to_currency)
+    - Confirm transfer of [750](amount) [GBP](from_currency) from [Eva White - 1234567890](from_account) to [Eva White - 1234567890](to_account) in [JPY](to_currency)
+
+- intent: provide_transfer_details
+  examples: |
+    - I want to transfer [1000](amount) [SGD](from_currency) to [AUD](to_currency)
+    - Transfer [500](amount) [USD](from_currency) to [EUR](to_currency)
+    - Exchange [750](amount) [GBP](from_currency) for [JPY](to_currency)
+    - Convert [2000](amount) [INR](from_currency) to [USD](to_currency)
+    - Send [300](amount) [EUR](from_currency) to [GBP](to_currency)
+
+- intent: provide_otp
+  examples: |
+    - Verify OTP: [111111](otp)
+    - Verify OTP: [222222](otp)
+    - Verify OTP: [333333](otp)
+    - My OTP is [123456](otp)
+    - The verification code is [654321](otp)
+    - OTP: [987654](otp)
+    - Here's my OTP: [246810](otp)
+    - Verification code [135790](otp)
+
+
+- intent: block_credit_card
+  examples: |
+    - block my credit card
+    - I want to block my credit card
+    - How can I block my credit card?
+    - Can you help me block my credit card?
+    - I would like to block my debit cards
+    - block my debit card
+
+- intent: affirm
+  examples: |
+    - yes
+    - yeah
+    - yup
+    - sure
+    - absolutely
+    - definitely
+    - of course
+    - indeed
+    - right
+    - correct
+    - exactly
+    - that's right
+    
+
+- intent: ask_schedule_call
+  examples: |
+    - Can you help to arrange a call with investment and financial team?
+    - I need to schedule a call with the financial team.
+    - I want to talk to someone from the investment team.
+    - Can I arrange a call with the financial advisor?
+    - I need to speak with the investment team.
+    - Can you schedule a call with finance team?
+    - Can you schedule a call with investment team?
+    - can you schedule a call?
+
+- intent: provide_branch
+  examples: |
+    - I want to contact [Branch 1 - Orchard Road](branch)
+    - I need to schedule a call with [Branch 2 - Raffles Place](branch)
+    - Please connect me to [Branch 3 - Marina Bay](branch)
+    - I would like to speak with someone at [Branch 4 - Bugis](branch)
+    - Can I arrange a call with [Branch 5 - Jurong East](branch)
+    - I want to talk to [Branch 6 - Tampines](branch)
+    - Connect me to [Branch 7 - Woodlands](branch)
+    - I need to contact [Branch 8 - Changi](branch)
+    - Please schedule a call with [Branch 9 - Sentosa](branch)
+
+- intent: provide_schedule_details
+  examples: |
+    - I want to schedule a call on [2023-10-01](schedule_details) at [10:00 AM](schedule_details)
+    - Please schedule a call on [2023-10-02](schedule_details) at [2:00 PM](schedule_details)
+    - I am available on [2023-10-03](schedule_details) at [4:00 PM](schedule_details)
+    - Schedule a call on [2023-10-04](schedule_details) at [9:00 AM](schedule_details)
+    - I would like to schedule a call on [2023-10-05](schedule_details) at [11:00 AM](schedule_details)
+
+
+
+- synonym: <50000
+  examples: |
+    - less than 50,000
+    - below 50k
+    - under 50000
+    - smaller than 50,000
+    - less than 50k
+    - < 50,000
+
+- synonym: 50000-100000
+  examples: |
+    - between 50,000 and 100,000
+    - 50k to 100k
+    - 50,000 to 100,000
+    - in the range of 50,000 to 100,000
+    - from 50,000 to 100,000
+    - 50,000 - 100,000
+
+- synonym: 100000-500000
+  examples: |
+    - between 100,000 and 500,000
+    - 100k to 500k
+    - 100,000 to 500,000
+    - in the range of 100,000 to 500,000
+    - from 100,000 to 500,000
+    - 100,000 - 500,000
+
+- synonym: 500000+
+  examples: |
+    - more than 500,000
+    - over 500,000
+    - 500k and above
+    - greater than 500,000
+    - higher than 500,000
+    - 500,000+

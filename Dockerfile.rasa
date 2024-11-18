@@ -1,0 +1,12 @@
+FROM rasa/rasa:3.5.0
+
+WORKDIR /app
+
+COPY . .
+
+USER root
+RUN rasa train
+
+USER 1001
+
+CMD ["run", "--enable-api", "--cors", "*"]

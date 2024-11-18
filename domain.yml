@@ -1,0 +1,366 @@
+version: "3.1"
+
+intents:
+  - greet
+  - select_service
+  - download_statement
+  - switch_service
+  - provide_income
+  - provide_preferences
+  - confirm_fee
+  - show_credit_cards
+  - investment_plans
+  - submit_investment_form
+  - loan_assessment
+  - loan_product
+  - inform
+  - currency_exchange
+  - initiate_transfer
+  - provide_transfer_details
+  - provide_otp
+  - block_credit_card
+  - affirm
+  - ask_schedule_call
+  - provide_branch
+  - provide_schedule_details
+  - validate_transfer_details
+
+
+entities:
+  - service
+  - annual_income
+  - preferences
+  - annual_fee
+  - investments
+  - loan_reason
+  - loan_amount
+  - loan_tenure
+  - loan_collateral
+  - loan_income_source
+  - amount
+  - from_currency
+  - to_currency
+  - otp
+  - transfer_id
+  - branch
+  - schedule_details
+
+
+
+slots:
+  service:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: service
+  annual_income:
+    type: float
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: annual_income
+  preferences:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: preferences
+  annual_fee:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: annual_fee
+  investments:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: investments
+  loan_reason:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: loan_reason
+  loan_amount:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: loan_amount
+  loan_tenure:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: loan_tenure
+  loan_collateral:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: loan_collateral
+
+  loan_income_source:
+    type: text
+    influence_conversation: false
+    mappings:
+      - type: from_entity
+        entity: loan_income_source
+
+  amount:
+    type: float
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: amount
+  
+  from_currency:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: from_currency
+  
+  to_currency:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: to_currency
+  
+  otp:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: otp
+  
+  transfer_id:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: transfer_id
+
+  branch:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: branch
+
+  schedule_details:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: schedule_details
+
+
+responses:
+  utter_greet:
+    - text: "Hey! How are you?"
+
+  utter_greet_morning:
+    - text: "Hi Anudeep, Good morning! Please select the below services."
+      buttons:
+        - title: "Account Services"
+          payload: '/select_service{"service": "account_services"}'
+        - title: "Financial Planning & Investment Services"
+          payload: '/select_service{"service": "financial_planning"}'
+        - title: "Credit Card Services"
+          payload: '/select_service{"service": "credit_card"}'
+        - title: "Loan Services"
+          payload: '/select_service{"service": "loan_services"}'
+        - title: "Currency Exchange"
+          payload: '/select_service{"service": "currency_exchange"}'
+        - title: "FAQ"
+          payload: '/select_service{"service": "faq"}'
+
+  utter_greet_evening:
+    - text: "Hi Anudeep, Good evening! Please select the below services."
+      buttons:
+        - title: "Account Services"
+          payload: '/select_service{"service": "account_services"}'
+        - title: "Financial Planning & Investment Services"
+          payload: '/select_service{"service": "financial_planning"}'
+        - title: "Credit Card Services"
+          payload: '/select_service{"service": "credit_card"}'
+        - title: "Loan Services"
+          payload: '/select_service{"service": "loan_services"}'
+        - title: "Currency Exchange"
+          payload: '/select_service{"service": "currency_exchange"}'
+        - title: "FAQ"
+          payload: '/select_service{"service": "faq"}'
+
+  utter_switch_service:
+    - text: "Sure, you can select another service from the options below."
+      buttons:
+        - title: "Account Services"
+          payload: '/select_service{"service": "account_services"}'
+        - title: "Financial Planning & Investment Services"
+          payload: '/select_service{"service": "financial_planning"}'
+        - title: "Credit Card Services"
+          payload: '/select_service{"service": "credit_card"}'
+        - title: "Loan Services"
+          payload: '/select_service{"service": "loan_services"}'
+        - title: "Currency Exchange"
+          payload: '/select_service{"service": "currency_exchange"}'
+        - title: "FAQ"
+          payload: '/select_service{"service": "faq"}'
+
+  utter_download_statement:
+    - text: "Please wait while I prepare the statement for download."
+
+  utter_ask_annual_income:
+    - text: "Could you please provide your annual income?"
+  utter_ask_preferences:
+    - text: "What are you looking for in a credit card? Miles, lounges, food, rewards?"
+  utter_ask_annual_fee:
+    - text: "Are you okay with an annual fee? Please respond with Yes or No."
+  utter_show_credit_cards:
+    - text: "Here are some credit cards based on your preferences:"
+  utter_invalid_input:
+    - text: "Sorry, I didn't understand that. Could you please provide more information?"
+
+
+  utter_ask_loan_reason:
+    - text: "What is your primary reason for seeking financing?"
+      buttons:
+        - title: "Home Purchase"
+          payload: '/inform{"loan_reason": "home_purchase"}'
+        - title: "Education"
+          payload: '/inform{"loan_reason": "education"}'
+        - title: "Medical Expenses"
+          payload: '/inform{"loan_reason": "medical_expenses"}'
+        - title: "Business Expansion"
+          payload: '/inform{"loan_reason": "business_expansion"}'
+
+  utter_ask_loan_amount:
+    - text: "How much loan amount are you seeking?"
+      buttons:
+        - title: "<50,000"
+          payload: '/inform{"loan_amount": "<50000"}'
+        - title: "50,000 - 100,000"
+          payload: '/inform{"loan_amount": "50000-100000"}'
+        - title: "100,000 - 500,000"
+          payload: '/inform{"loan_amount": "100000-500000"}'
+        - title: "500,000+"
+          payload: '/inform{"loan_amount": "500000+"}'
+
+  utter_ask_loan_tenure:
+    - text: "What loan tenure are you looking for?"
+      buttons:
+        - title: "1-3 years"
+          payload: '/inform{"loan_tenure": "1-3 years"}'
+        - title: "3-5 years"
+          payload: '/inform{"loan_tenure": "3-5 years"}'
+        - title: "5-10 years"
+          payload: '/inform{"loan_tenure": "5-10 years"}'
+        - title: "10+ years"
+          payload: '/inform{"loan_tenure": "10+ years"}'
+
+  utter_ask_loan_collateral:
+    - text: "What type of collateral can you offer for the loan?"
+      buttons:
+        - title: "Property"
+          payload: '/inform{"loan_collateral": "property"}'
+        - title: "Vehicle"
+          payload: '/inform{"loan_collateral": "vehicle"}'
+        - title: "Jewelry"
+          payload: '/inform{"loan_collateral": "jewelry"}'
+        - title: "None"
+          payload: '/inform{"loan_collateral": "none"}'
+
+  utter_ask_loan_income_source:
+    - text: "What is your primary source of income?"
+      buttons:
+        - title: "Salaried"
+          payload: '/inform{"loan_income_source": "salaried"}'
+        - title: "Self-employed"
+          payload: '/inform{"loan_income_source": "self_employed"}'
+        - title: "Business Owner"
+          payload: '/inform{"loan_income_source": "business_owner"}'
+        - title: "Other"
+          payload: '/inform{"loan_income_source": "other"}'
+
+  utter_loan_services:
+    - text: "Please choose from the following options:"
+      buttons:
+        - title: "Loan Assessment"
+          payload: '/loan_assessment{"service": "loan_assessment"}'
+        - title: "View Loan Products"
+          payload: '/loan_product{"service": "view_loan_products"}'
+
+
+  utter_additional_loan_products:
+    - text: "Here are additional loan products:"
+      buttons:
+        - title: "Home Loan"
+          payload: '/loan_product{"product": "home_loan"}'
+        - title: "Car Loan"
+          payload: '/loan_product{"product": "car_loan"}'
+        - title: "Personal Loan"
+          payload: '/loan_product{"product": "personal_loan"}'
+        - title: "Education Loan"
+          payload: '/loan_product{"product": "education_loan"}'
+
+  utter_loan_assessment_complete:
+    - text: "Thank you for completing the loan assessment."
+
+  utter_block_card_deny:
+    - text: "Sure."
+
+  utter_currency_exchange:
+    - text: "Sure, I can help you with currency exchange. What would you like to do?"
+      buttons:
+        - title: "View Exchange Rates"
+          payload: "/currency_exchange"
+        - title: "Convert Currency"
+          payload: "/currency_exchange"
+  
+  utter_block_credit_card:
+    - text: "Currently, card blocking cannot be done through chat services. <br /> </br /> I can help guide you on navigating the menu to block your card. Would you like to proceed?"
+      buttons:
+        - title: "Yes"
+          payload: '/affirm'
+        - title: "No"
+          payload: '/deny'
+
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
+
+actions:
+  - action_handle_service_selection
+  - action_download_statement
+  - action_switch_service
+  - action_greet_user
+  - action_handle_credit_card_services
+  - action_show_credit_cards
+  - action_reset_slots
+  - action_submit_investment_form
+  - action_save_loan_assessment_data
+  - validate_loan_assessment_form
+  - action_show_additional_loan_products
+  - action_show_currency_exchange
+  - action_verify_otp
+  - action_initiate_transfer
+  - action_send_otp
+  - action_show_block_card_section
+  - action_show_locations_card
+  - action_show_schedule_card
+  - action_show_confirmation_card
+
+
+forms:
+  loan_assessment_form:
+    required_slots:
+      - loan_reason
+      - loan_amount
+      - loan_tenure
+      - loan_collateral
+      - loan_income_source

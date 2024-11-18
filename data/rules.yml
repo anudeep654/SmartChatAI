@@ -1,0 +1,16 @@
+version: "3.1"
+
+rules:
+  - rule: Activate loan assessment form
+    steps:
+      - intent: loan_assessment
+      - action: loan_assessment_form
+      - active_loop: loan_assessment_form
+
+  - rule: Submit loan assessment form
+    condition:
+      - active_loop: loan_assessment_form
+    steps:
+      - action: loan_assessment_form
+      - active_loop: null
+      - action: action_save_loan_assessment_data
